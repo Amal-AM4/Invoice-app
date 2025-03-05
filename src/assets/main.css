@@ -1,0 +1,8 @@
+:root {
+  --dark-bg: background-color: #252945;
+  --red-bg: background-color: #ec5757;
+  --purple-bg: background-color: #7c5dfa;
+  --green-bg: background-color: #33d69f;
+  --orange-bg: background-color: #ff8f00;
+  --box-shadow: box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
