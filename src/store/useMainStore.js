@@ -1,12 +1,48 @@
+import { db } from '@/firebase/firebaseInit';
+import { collection, getDocs } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
 export const useMainStore = defineStore('main', {
   state: () => ({
     invoiceModal: false,
+    modalActive: false,
+    invoiceData: [],
+    invoicesLoaded: false,
   }),
   actions: {
     TOGGLE_INVOICE() {
       this.invoiceModal = !this.invoiceModal;
+    },
+    TOGGLE_MODAL() {
+      this.modalActive = !this.modalActive;
+    },
+    SET_INVOICE_DATA(payload) {
+      this.invoiceData.push(payload);
+      // console.log(this.invoiceData)
+    },
+    INVOICES_LOADED() {
+      this.invoicesLoaded = true;
+    },
+    async GET_INVOICES() {
+      try {
+        const getData = collection(db, 'invoices'); // ✅ Correct Firestore reference
+        const results = await getDocs(getData);
+
+        results.forEach(doc => {
+          if (!this.invoiceData.some(invoice => invoice.docId === doc.id)) {
+            const data = {
+              docId: doc.id,
+              ...doc.data() // ✅ Spreads the document data instead of writing each field manually
+            };
+
+            this.SET_INVOICE_DATA(data); // ✅ Correct method call
+          }
+        });
+
+        this.INVOICES_LOADED(); // ✅ Correct method call
+      } catch (error) {
+        console.error("Error fetching invoices:", error);
+      }
     }
-  },
+  }
 });

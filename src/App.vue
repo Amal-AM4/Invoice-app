@@ -4,10 +4,14 @@ import NavigationComponent from './components/NavigationComponent.vue';
 import { onMounted, ref, onBeforeUnmount, computed } from 'vue';
 import InvoiceModal from './components/InvoiceModal.vue';
 import { useMainStore } from './store/useMainStore';
+import ModalComponent from './components/ModalComponent.vue';
 
 const store = useMainStore()
 
+// state in pinia
 const invoiceModal = computed(() => store.invoiceModal)
+const modalActive = computed(() => store.modalActive)
+const invoicesLoaded = computed(() => store.invoicesLoaded)
 
 const mobile = ref(null);
 
@@ -17,6 +21,7 @@ const checkScreen = () => {
 };
 
 onMounted(() => {
+  store.GET_INVOICES();
   checkScreen();
   window.addEventListener("resize", checkScreen);
 });
@@ -27,10 +32,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div>
+  <div v-if="invoicesLoaded">
     <div v-if="!mobile" class="app flex flex-column">
       <NavigationComponent />
       <div class="app-content flex flex-column">
+        <ModalComponent v-if="modalActive" />
         <transition name="invoice">
           <InvoiceModal v-if="invoiceModal" />
         </transition>

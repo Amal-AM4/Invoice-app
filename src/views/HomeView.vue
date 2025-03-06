@@ -4,7 +4,7 @@
     <div class="header flex">
       <div class="left flex flex-column">
         <h1>Invoices</h1>
-        <span>There are 4 total invoices</span>
+        <span>There are {{ invoiceData.length }} total invoices</span>
       </div>
 
       <div class="right flex ">
@@ -28,14 +28,25 @@
       </div>
 
     </div>
+    <!-- invoices -->
+    <div v-if="invoiceData.length > 0">
+      <InvoiceComponent v-for="(invoice, index) in invoiceData" :key="index" :invoice="invoice" />
+    </div>
+    <div v-else class="empty flex flex-column">
+      <img src="../assets/illustration-empty.svg" alt="no records">
+      <h3>There is nothing here</h3>
+      <p>Create a new invoice by clicking the New Invoice button and get started</p>
+    </div>
   </div>
 </template>
 
 <script setup>
+import InvoiceComponent from '@/components/InvoiceComponent.vue';
 import { useMainStore } from '@/store/useMainStore';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const store = useMainStore()
+const invoiceData = computed(() => store.invoiceData)
 
 const filterMenu = ref(false)
 
@@ -124,6 +135,29 @@ const toggleFilterMenu = () => {
           }
         }
       }
+    }
+  }
+
+  .empty {
+    margin-top: 160px;
+    align-items: center;
+
+    img {
+      width: 240px;
+      height: 200px;
+    }
+
+    h3 {
+      font-size: 20px;
+      margin-top: 40px;
+    }
+
+    p {
+      text-align: center;
+      max-width: 240px;
+      font-size: 12px;
+      font-weight: 300;
+      margin-top: 16px;
     }
   }
 }

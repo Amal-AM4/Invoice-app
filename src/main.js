@@ -5,7 +5,7 @@ import Toast from "vue-toastification";
 import App from './App.vue'
 import router from './router'
 import pinia from './store'
-import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import "vue-toastification/dist/index.css";
 
 const app = createApp(App)
 

@@ -116,11 +116,11 @@
       <!-- save/exit -->
       <div class="save flex">
         <div class="left">
-          <button @click="closeInvoice" class="red">Cancel</button>
+          <button type="button" @click="closeInvoice" class="red">Cancel</button>
         </div>
         <div class="right flex">
-          <button @click="saveDraft" class="dark-purple">Save Draft</button>
-          <button @click="publishInvoice" class="purple">Create Invoice</button>
+          <button type="submit" @click="saveDraft" class="dark-purple">Save Draft</button>
+          <button type="submit" @click="publishInvoice" class="purple">Create Invoice</button>
         </div>
       </div>
     </form>
@@ -131,13 +131,15 @@
 import { db, collection, doc, setDoc } from '@/firebase/firebaseInit';
 import { useMainStore } from '@/store/useMainStore';
 import { uid } from 'uid';
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { useToast } from 'vue-toastification';
 
 const store = useMainStore()
+const toast = useToast()
 
 const dateOptions = ref({ year: "numeric", month: "short", day: "numeric" });
 const docId = ref(null);
-const loading = ref(null);
+// const loading = ref(null);
 const billerStreetAddress = ref(null);
 const billerCity = ref(null);
 const billerZipCode = ref(null);
@@ -158,6 +160,14 @@ const invoicePending = ref(null);
 const invoiceDraft = ref(null);
 const invoiceItemList = ref([]);
 const invoiceTotal = ref(0);
+
+const invoiceWrap = ref()
+
+const checkClick = (e) => {
+  if (e.target === invoiceWrap.value) {
+    store.TOGGLE_MODAL()
+  }
+}
 
 const closeInvoice = () => {
   store.TOGGLE_INVOICE()
@@ -230,6 +240,8 @@ const uploadInvoice = async () => {
     invoiceDraft: invoiceDraft.value,
     invoicePaid: false,
   });
+
+  toast.success("Invoices is added.")
 
   store.TOGGLE_INVOICE()
 }
