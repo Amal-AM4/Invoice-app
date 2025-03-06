@@ -1,5 +1,5 @@
 import { db } from '@/firebase/firebaseInit';
-import { collection, doc, deleteDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, deleteDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 
 export const useMainStore = defineStore('main', {
@@ -36,6 +36,23 @@ export const useMainStore = defineStore('main', {
     REMOVE_INVOICE_FROM_STATE(payload) {
       this.invoiceData = this.invoiceData.filter(invoice => invoice.docId !== payload)
     },
+    UPDATE_STATUS_TO_PAID(payload) {
+      this.invoiceData.forEach(invoice => {
+        if (invoice.docId === payload) {
+          invoice.invoicePaid = true
+          invoice.invoicePending = false
+        }
+      })
+    },
+    UPDATE_STATUS_TO_PENDING(payload) {
+      this.invoiceData.forEach(invoice => {
+        if (invoice.docId === payload) {
+          invoice.invoicePaid = false
+          invoice.invoicePending = true
+          invoice.invoiceDraft = false
+        }
+      })
+    },
     async GET_INVOICES() {
       try {
         const getData = collection(db, 'invoices'); // ✅ Correct Firestore reference
@@ -71,6 +88,31 @@ export const useMainStore = defineStore('main', {
         this.REMOVE_INVOICE_FROM_STATE(docId); // ✅ Remove from local state
       } catch (error) {
         console.error("Error deleting invoice:", error);
+      }
+    },
+    async UPDATE_STATUS_TO_PAIDED(docId) {
+      try {
+        const invoiceRef = doc(db, "invoices", docId);
+        await updateDoc(invoiceRef, {
+          invoicePaid: true,
+          invoicePending: false,
+        });
+        this.UPDATE_STATUS_TO_PAID(docId); // ✅ Properly update local state
+      } catch (error) {
+        console.error("Error updating invoice status:", error);
+      }
+    },
+    async UPDATE_STATUS_TO_PENDING_WORK(docId) {
+      try {
+        const invoiceRef = doc(db, "invoices", docId);
+        await updateDoc(invoiceRef, {
+          invoicePaid: false,
+          invoicePending: false,
+          invoiceDraft: false
+        });
+        this.UPDATE_STATUS_TO_PENDING(docId); // ✅ Properly update local state
+      } catch (error) {
+        console.error("Error updating invoice status:", error);
       }
     },
   }

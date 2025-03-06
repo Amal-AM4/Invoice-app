@@ -127,6 +127,14 @@ const deleteInvoice = async (docId) => {
   router.push('/')
 }
 
+const updateStatusToPaid = (docId) => {
+  store.UPDATE_STATUS_TO_PAIDED(docId)
+}
+
+const updateStatusToPending = (docId) => {
+  store.UPDATE_STATUS_TO_PENDING_WORK(docId)
+}
+
 onMounted(() => {
   getCurrentInvoice();
 });

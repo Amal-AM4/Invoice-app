@@ -257,6 +257,7 @@ const uploadInvoice = async () => {
   toast.success("Invoices is added.")
 
   store.TOGGLE_INVOICE()
+  store.GET_INVOICES()
 }
 
 const updateInvoice = async () => {
