@@ -18,7 +18,7 @@ const router = createRouter({
       name: 'Invoice',
       component: InvoiceView,
       meta: {
-        title: 'Home'
+        title: 'Invoice'
       }
     },
 
