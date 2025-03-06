@@ -9,6 +9,7 @@ export const useMainStore = defineStore('main', {
     invoiceData: [],
     invoicesLoaded: false,
     currentInvoiceArray: null,
+    editInvoice: false,
   }),
   actions: {
     TOGGLE_INVOICE() {
@@ -28,6 +29,9 @@ export const useMainStore = defineStore('main', {
       this.currentInvoiceArray = this.invoiceData.filter(invoice => {
         return invoice.invoiceId === payload
       })
+    },
+    TOGGLE_EDIT_INVOICE() {
+      this.editInvoice = !this.editInvoice
     },
     async GET_INVOICES() {
       try {

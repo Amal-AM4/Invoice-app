@@ -12,8 +12,11 @@
 
 <script setup>
 import { useMainStore } from '@/store/useMainStore';
+import { computed } from 'vue';
 
 const store = useMainStore()
+
+const editInvoice = computed(() => store.editInvoice)
 
 const closeModal = () => {
   store.TOGGLE_MODAL()
@@ -22,6 +25,9 @@ const closeModal = () => {
 const closeInvoice = () => {
   store.TOGGLE_MODAL()
   store.TOGGLE_INVOICE()
+  if(editInvoice.value) {
+    store.TOGGLE_EDIT_INVOICE()
+  }
 }
 </script>
 

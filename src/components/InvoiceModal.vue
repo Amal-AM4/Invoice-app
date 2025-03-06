@@ -1,7 +1,8 @@
 <template>
   <div @click="checkClick" ref="invoiceWrap" class="invoice-wrap flex flex-column">
     <form @submit.prevent="submitForm" class="invoice-content">
-      <h1>New Invoice</h1>
+      <h1 v-if="!editInvoice">New Invoice</h1>
+      <h1 v-else>Edit Invoice</h1>
 
       <!-- bill from -->
       <div class="bill-from flex flex-column">
@@ -119,8 +120,9 @@
           <button type="button" @click="closeInvoice" class="red">Cancel</button>
         </div>
         <div class="right flex">
-          <button type="submit" @click="saveDraft" class="dark-purple">Save Draft</button>
-          <button type="submit" @click="publishInvoice" class="purple">Create Invoice</button>
+          <button v-if="!editInvoice" type="submit" @click="saveDraft" class="dark-purple">Save Draft</button>
+          <button v-if="!editInvoice" type="submit" @click="publishInvoice" class="purple">Create Invoice</button>
+          <button v-else type="submit" @click="publishInvoice" class="purple">Update Invoice</button>
         </div>
       </div>
     </form>
@@ -131,11 +133,14 @@
 import { db, collection, doc, setDoc } from '@/firebase/firebaseInit';
 import { useMainStore } from '@/store/useMainStore';
 import { uid } from 'uid';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 
 const store = useMainStore()
 const toast = useToast()
+
+const editInvoice = computed(() => store.editInvoice)
+const currentInvoiceArray = computed(() => store.currentInvoiceArray)
 
 const dateOptions = ref({ year: "numeric", month: "short", day: "numeric" });
 const docId = ref(null);
@@ -171,6 +176,9 @@ const checkClick = (e) => {
 
 const closeInvoice = () => {
   store.TOGGLE_INVOICE()
+  if(editInvoice.value) {
+    store.TOGGLE_EDIT_INVOICE()
+  }
 }
 
 const addNewInvoiceItem = () => {
@@ -265,8 +273,37 @@ const getCurrentDate = () => {
   invoiceDateUnix.value = Date.now()
   invoiceDate.value = new Date(invoiceDateUnix.value).toLocaleDateString('en-us', dateOptions.value)
 }
+
 onMounted(() => {
-  getCurrentDate()
+  if(!editInvoice.value) {
+    getCurrentDate()
+    console.log('get')
+  }
+
+  if (editInvoice.value) {
+    const currentInvoice = currentInvoiceArray.value[0]
+
+    billerStreetAddress.value = currentInvoice.billerStreetAddress;
+    billerCity.value = currentInvoice.billerCity;
+    billerZipCode.value = currentInvoice.billerZipCode;
+    billerCountry.value = currentInvoice.billerCountry;
+    clientName.value = currentInvoice.clientName;
+    clientEmail.value = currentInvoice.clientEmail;
+    clientStreetAddress.value = currentInvoice.clientStreetAddress;
+    clientCity.value = currentInvoice.clientCity;
+    clientZipCode.value = currentInvoice.clientZipCode;
+    clientCountry.value = currentInvoice.clientCountry;
+    invoiceDateUnix.value = currentInvoice.invoiceDateUnix;
+    invoiceDate.value = currentInvoice.invoiceDate;
+    paymentTerms.value = currentInvoice.paymentTerms;
+    paymentDueDateUnix.value = currentInvoice.paymentDueDateUnix;
+    paymentDueDate.value = currentInvoice.paymentDueDate;
+    productDescription.value = currentInvoice.productDescription;
+    invoicePending.value = currentInvoice.invoicePending;
+    invoiceDraft.value = currentInvoice.invoiceDraft;
+    invoiceItemList.value = currentInvoice.invoiceItemList;
+    invoiceTotal.value = currentInvoice.invoiceTotal;
+  }
 })
 
 </script>

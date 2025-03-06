@@ -116,6 +116,11 @@ const getCurrentInvoice = () => {
   currentInvoice.value = currentInvoiceArray.value[0]
 };
 
+const toggleEditInvoice = () => {
+  store.TOGGLE_EDIT_INVOICE()
+  store.TOGGLE_INVOICE()
+}
+
 onMounted(() => {
   getCurrentInvoice();
 });
