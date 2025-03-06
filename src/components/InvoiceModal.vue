@@ -132,12 +132,17 @@
 <script setup>
 import { db, collection, doc, setDoc } from '@/firebase/firebaseInit';
 import { useMainStore } from '@/store/useMainStore';
+import { updateDoc } from 'firebase/firestore';
 import { uid } from 'uid';
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 
 const store = useMainStore()
 const toast = useToast()
+const route = useRoute();
+
+const invoiceId = route.params.invoiceId;
 
 const editInvoice = computed(() => store.editInvoice)
 const currentInvoiceArray = computed(() => store.currentInvoiceArray)
@@ -214,7 +219,7 @@ const saveDraft = () => {
 
 const uploadInvoice = async () => {
   if (invoiceItemList.value.length <= 0) {
-    alert('Please ensure you filled out work items')
+    toast.warning('Please ensure you filled out work items')
     return
   }
 
@@ -254,7 +259,59 @@ const uploadInvoice = async () => {
   store.TOGGLE_INVOICE()
 }
 
+const updateInvoice = async () => {
+  if (invoiceItemList.value.length <= 0) {
+    toast.warning('Please ensure you filled out work items');
+    return;
+  }
+
+  calInvoiceItem();
+
+  // ✅ Correct Firestore document reference
+  const invoiceRef = doc(db, "invoices", docId.value);
+
+  try {
+    await updateDoc(invoiceRef, {
+      billerStreetAddress: billerStreetAddress.value,
+      billerCity: billerCity.value,
+      billerZipCode: billerZipCode.value,
+      billerCountry: billerCountry.value,
+      clientName: clientName.value,
+      clientEmail: clientEmail.value,
+      clientStreetAddress: clientStreetAddress.value,
+      clientCity: clientCity.value,
+      clientZipCode: clientZipCode.value,
+      clientCountry: clientCountry.value,
+      invoiceDate: invoiceDate.value,
+      invoiceDateUnix: invoiceDateUnix.value,
+      paymentTerms: paymentTerms.value,
+      paymentDueDate: paymentDueDate.value,
+      paymentDueDateUnix: paymentDueDateUnix.value,
+      productDescription: productDescription.value,
+      invoiceItemList: invoiceItemList.value,
+      invoiceTotal: invoiceTotal.value,
+    });
+
+    toast.success('Invoice has been updated.');
+
+    const data = {
+      docId: docId.value,
+      routeId: invoiceId
+    };
+
+    store.UPDATE_INVOICE(data);
+  } catch (error) {
+    toast.error('Failed to update the invoice.');
+    console.error('Error updating invoice:', error);
+  }
+};
+
+
 const submitForm = () => {
+  if (editInvoice.value) {
+    updateInvoice()
+    return
+  }
   uploadInvoice()
 }
 
@@ -283,6 +340,7 @@ onMounted(() => {
   if (editInvoice.value) {
     const currentInvoice = currentInvoiceArray.value[0]
 
+    docId.value = currentInvoice.docId;
     billerStreetAddress.value = currentInvoice.billerStreetAddress;
     billerCity.value = currentInvoice.billerCity;
     billerZipCode.value = currentInvoice.billerZipCode;

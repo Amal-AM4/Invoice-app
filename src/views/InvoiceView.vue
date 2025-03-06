@@ -100,7 +100,7 @@
 
 <script setup>
 import { useMainStore } from '@/store/useMainStore';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -124,6 +124,13 @@ const toggleEditInvoice = () => {
 onMounted(() => {
   getCurrentInvoice();
 });
+
+// ✅ Improved watch statement
+watch(currentInvoiceArray, (newVal) => {
+  if (newVal && newVal.length > 0) {
+    currentInvoice.value = newVal[0];
+  }
+}, { immediate: true }); // Ensures it runs immediately on component mount
 </script>
 
 <style lang="scss" scoped>

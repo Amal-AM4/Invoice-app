@@ -33,6 +33,9 @@ export const useMainStore = defineStore('main', {
     TOGGLE_EDIT_INVOICE() {
       this.editInvoice = !this.editInvoice
     },
+    DELETE_INVOICE(payload) {
+      this.invoiceData = this.invoiceData.filter(invoice => invoice.docId !== payload)
+    },
     async GET_INVOICES() {
       try {
         const getData = collection(db, 'invoices'); // ✅ Correct Firestore reference
@@ -53,6 +56,13 @@ export const useMainStore = defineStore('main', {
       } catch (error) {
         console.error("Error fetching invoices:", error);
       }
+    },
+    async UPDATE_INVOICE(docId, routeId) {
+      this.DELETE_INVOICE(docId);
+      await this.GET_INVOICES();
+      this.TOGGLE_INVOICE();
+      this.TOGGLE_EDIT_INVOICE();
+      this.SET_CURRENT_INVOICE(routeId)
     }
   }
 });
