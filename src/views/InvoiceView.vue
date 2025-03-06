@@ -101,9 +101,10 @@
 <script setup>
 import { useMainStore } from '@/store/useMainStore';
 import { computed, onMounted, ref, watch } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const store = useMainStore();
 
 const currentInvoice = ref(null);
@@ -119,6 +120,11 @@ const getCurrentInvoice = () => {
 const toggleEditInvoice = () => {
   store.TOGGLE_EDIT_INVOICE()
   store.TOGGLE_INVOICE()
+}
+
+const deleteInvoice = async (docId) => {
+  await store.DELETE_INVOICE(docId)
+  router.push('/')
 }
 
 onMounted(() => {
