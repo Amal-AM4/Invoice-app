@@ -22,7 +22,7 @@ A **simple Invoice Builder** built with **Vue 3** and the **Composition API**. E
 
 ## 📸 Screenshot
 ![Vue 3 Invoice Builder Screenshot](public/localhost_5173_.png)
-![Invoice View](public/localhost_5173_(3).png.png)
+![Invoice View](public/localhost_5173_(3).png)
 
 ## 🛠️ Project Setup
 
