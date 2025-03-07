@@ -9,13 +9,13 @@
 
       <div class="right flex ">
         <div @click="toggleFilterMenu" class="filter flex">
-          <span>Filter by status</span>
+          <span>Filter by status <span v-if="filteredInv"></span>:{{ filteredInv }}</span>
           <img src="../assets/icon-arrow-down.svg" alt="">
           <ul v-show="filterMenu" class="filter-menu">
-            <li>Draft</li>
-            <li>Pending</li>
-            <li>Paid</li>
-            <li>Clear Filter</li>
+            <li @click="filteredInvoices">Draft</li>
+            <li @click="filteredInvoices">Pending</li>
+            <li @click="filteredInvoices">Paid</li>
+            <li @click="filteredInvoices">Clear Filter</li>
           </ul>
         </div>
 
@@ -30,7 +30,7 @@
     </div>
     <!-- invoices -->
     <div v-if="invoiceData.length > 0">
-      <InvoiceComponent v-for="(invoice, index) in invoiceData" :key="index" :invoice="invoice" />
+      <InvoiceComponent v-for="(invoice, index) in filteredData" :key="index" :invoice="invoice" />
     </div>
     <div v-else class="empty flex flex-column">
       <img src="../assets/illustration-empty.svg" alt="no records">
@@ -49,6 +49,7 @@ const store = useMainStore()
 const invoiceData = computed(() => store.invoiceData)
 
 const filterMenu = ref(false)
+const filteredInv = ref(null)
 
 const newInvoice = () => {
   store.TOGGLE_INVOICE() // call the action to toggle invoiceModal
@@ -57,6 +58,31 @@ const newInvoice = () => {
 const toggleFilterMenu = () => {
   filterMenu.value = !filterMenu.value
 }
+
+const filteredInvoices = (e) => {
+  if (e.target.innerText === 'Clear Filter') {
+    filteredInv.value = false
+    return
+  }
+
+  filteredInv.value = e.target.innerText
+}
+
+// ✅ Correct computed property definition
+const filteredData = computed(() => {
+  return invoiceData.value.filter(invoice => {
+    if (filteredInv.value === "Draft") {
+      return invoice.invoiceDraft === true;
+    }
+    if (filteredInv.value === "Pending") {
+      return invoice.invoicePending === true;
+    }
+    if (filteredInv.value === "Paid") {
+      return invoice.invoicePaid === true;
+    }
+    return true; // Show all invoices if no filter is selected
+  });
+});
 
 </script>
 

@@ -74,12 +74,26 @@ export const useMainStore = defineStore('main', {
         console.error("Error fetching invoices:", error);
       }
     },
-    async UPDATE_INVOICE(docId, routeId) {
-      this.DELETE_INVOICE(docId);
-      await this.GET_INVOICES();
-      this.TOGGLE_INVOICE();
-      this.TOGGLE_EDIT_INVOICE();
-      this.SET_CURRENT_INVOICE(routeId)
+    async UPDATE_INVOICE(docId, updatedData) {
+      if (!docId || typeof docId !== 'string') {
+        console.error("Invalid docId in UPDATE_INVOICE:", docId);
+        return;
+      }
+
+      try {
+        const invoiceRef = doc(db, "invoices", docId);
+        await updateDoc(invoiceRef, updatedData);
+
+        // ✅ Update local state instead of deleting and refetching
+        this.invoiceData = this.invoiceData.map(invoice =>
+          invoice.docId === docId ? { ...invoice, ...updatedData } : invoice
+        );
+
+        console.log("Invoice updated successfully.");
+      } catch (error) {
+        console.error("Error updating invoice:", error);
+        console.log("Failed to update invoice.");
+      }
     },
     async DELETE_INVOICE(docId) {
       try {
@@ -107,7 +121,7 @@ export const useMainStore = defineStore('main', {
         const invoiceRef = doc(db, "invoices", docId);
         await updateDoc(invoiceRef, {
           invoicePaid: false,
-          invoicePending: false,
+          invoicePending: true,
           invoiceDraft: false
         });
         this.UPDATE_STATUS_TO_PENDING(docId); // ✅ Properly update local state

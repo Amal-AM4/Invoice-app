@@ -131,8 +131,8 @@
 
 <script setup>
 import { db, collection, doc, setDoc } from '@/firebase/firebaseInit';
+import router from '@/router';
 import { useMainStore } from '@/store/useMainStore';
-import { updateDoc } from 'firebase/firestore';
 import { uid } from 'uid';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
@@ -141,6 +141,7 @@ import { useToast } from 'vue-toastification';
 const store = useMainStore()
 const toast = useToast()
 const route = useRoute();
+// const router = useRouter();
 
 const invoiceId = route.params.invoiceId;
 
@@ -266,41 +267,53 @@ const updateInvoice = async () => {
     return;
   }
 
-  calInvoiceItem();
+  calInvoiceItem(); // ✅ Ensure calculations are updated before saving
 
-  // ✅ Correct Firestore document reference
-  const invoiceRef = doc(db, "invoices", docId.value);
+  if (!docId.value || typeof docId.value !== "string") {
+    toast.error("Invalid invoice ID.");
+    console.error("Invalid docId:", docId.value);
+    return;
+  }
+
+  // ✅ Construct updated data object
+  const updatedData = {
+    billerStreetAddress: billerStreetAddress.value,
+    billerCity: billerCity.value,
+    billerZipCode: billerZipCode.value,
+    billerCountry: billerCountry.value,
+    clientName: clientName.value,
+    clientEmail: clientEmail.value,
+    clientStreetAddress: clientStreetAddress.value,
+    clientCity: clientCity.value,
+    clientZipCode: clientZipCode.value,
+    clientCountry: clientCountry.value,
+    invoiceDate: invoiceDate.value,
+    invoiceDateUnix: invoiceDateUnix.value,
+    paymentTerms: paymentTerms.value,
+    paymentDueDate: paymentDueDate.value,
+    paymentDueDateUnix: paymentDueDateUnix.value,
+    productDescription: productDescription.value,
+    invoiceItemList: invoiceItemList.value,
+    invoiceTotal: invoiceTotal.value,
+  };
 
   try {
-    await updateDoc(invoiceRef, {
-      billerStreetAddress: billerStreetAddress.value,
-      billerCity: billerCity.value,
-      billerZipCode: billerZipCode.value,
-      billerCountry: billerCountry.value,
-      clientName: clientName.value,
-      clientEmail: clientEmail.value,
-      clientStreetAddress: clientStreetAddress.value,
-      clientCity: clientCity.value,
-      clientZipCode: clientZipCode.value,
-      clientCountry: clientCountry.value,
-      invoiceDate: invoiceDate.value,
-      invoiceDateUnix: invoiceDateUnix.value,
-      paymentTerms: paymentTerms.value,
-      paymentDueDate: paymentDueDate.value,
-      paymentDueDateUnix: paymentDueDateUnix.value,
-      productDescription: productDescription.value,
-      invoiceItemList: invoiceItemList.value,
-      invoiceTotal: invoiceTotal.value,
-    });
+    // ✅ Update invoice in Firestore through Pinia store
+    await store.UPDATE_INVOICE(docId.value, updatedData);
 
-    toast.success('Invoice has been updated.');
+    // toast.success('Invoice has been updated.');
 
-    const data = {
-      docId: docId.value,
-      routeId: invoiceId
-    };
+    // ✅ Close the modal after update
+    store.TOGGLE_INVOICE();
+    store.TOGGLE_EDIT_INVOICE();
+    store.GET_INVOICES(); // ✅ Refresh data in the view
 
-    store.UPDATE_INVOICE(data);
+    // ✅ Reload current route
+    // ✅ Delay the reload (e.g., 2 seconds)
+    setTimeout(() => {
+      router.go(0);
+    }, 1000); // 2000ms = 2 seconds
+
   } catch (error) {
     toast.error('Failed to update the invoice.');
     console.error('Error updating invoice:', error);

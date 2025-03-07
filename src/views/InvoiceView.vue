@@ -27,7 +27,7 @@
           Mark as Paid
         </button>
         <button
-          v-if="currentInvoice.invoiceDraft || currentInvoice.invoicePaid"
+          v-if="currentInvoice.invoicePaid"
           @click="updateStatusToPending(currentInvoice.docId)"
           class="orange"
         >
@@ -100,7 +100,7 @@
 
 <script setup>
 import { useMainStore } from '@/store/useMainStore';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
@@ -108,6 +108,8 @@ const router = useRouter();
 const store = useMainStore();
 
 const currentInvoice = ref(null);
+// const currentInvoice = computed(() => currentInvoiceArray.value[0]);
+
 
 const id = route.params.invoiceId;
 const currentInvoiceArray = computed(() => store.currentInvoiceArray);
@@ -140,11 +142,15 @@ onMounted(() => {
 });
 
 // ✅ Improved watch statement
-watch(currentInvoiceArray, (newVal) => {
-  if (newVal && newVal.length > 0) {
-    currentInvoice.value = newVal[0];
+watchEffect(() => {
+  if (currentInvoiceArray.value && currentInvoiceArray.value.length > 0) {
+    currentInvoice.value = { ...currentInvoiceArray.value[0] }; // ✅ Ensure Vue detects changes
+    console.log('watchEffect triggered');
   }
-}, { immediate: true }); // Ensures it runs immediately on component mount
+});
+
+
+
 </script>
 
 <style lang="scss" scoped>
