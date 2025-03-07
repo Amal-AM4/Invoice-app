@@ -1,35 +1,46 @@
-# invoice-app
+# Vue 3 Invoice Builder 🧾💼
 
-This template should help get you started developing with Vue 3 in Vite.
+A **simple Invoice Builder** built with **Vue 3** and the **Composition API**. Easily **add, update, delete, and filter invoices** (Pending & Paid) while leveraging **Firebase for real-time data storage**.
 
-## Recommended IDE Setup
+## 🚀 Features
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+✅ **Add, update, and delete invoices**  
+✅ **Filter invoices by status (Pending & Paid)**  
+✅ **Real-time data storage with Firebase**  
+✅ **Vue Toastification for smooth notifications**  
+✅ **State management with Pinia**  
+✅ **Styled with SCSS for a clean UI**  
 
-## Customize configuration
+## 📦 Tech Stack
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- **Vue 3 (Composition API)**
+- **Firebase**
+- **Pinia (State Management)**
+- **Vue-Toastification**
+- **SCSS**
+- **Vite**
 
-## Project Setup
+## 📸 Screenshot
+![Vue 3 Invoice Builder Screenshot](public/)
 
+## 🛠️ Project Setup
+
+### **1️⃣ Install dependencies**  
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
-
+### **2️⃣ Start Development Server**  
 ```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
-
+### **3️⃣ Compile & Minify for Production**  
 ```sh
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## 📜 License
+This project is licensed under the **MIT License**.
 
-```sh
-npm run lint
-```
+🔗 **GitHub Repository**: [Invoice App](https://github.com/Amal-AM4/Invoice-app)
